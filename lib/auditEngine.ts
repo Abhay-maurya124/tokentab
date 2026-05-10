@@ -18,22 +18,25 @@ const PRICING: Record<string, Record<string, number>> = {
     max: 100,
     team: 30,
     enterprise: 50,
+    'api direct': 0,
   },
   chatgpt: {
     plus: 20,
     team: 30,
     enterprise: 50,
+    'api direct': 0,
   },
   anthropic_api: {
-    pay_as_you_go: 0,
+    'pay as you go': 0,
   },
   openai_api: {
-    pay_as_you_go: 0,
+    'pay as you go': 0,
   },
   gemini: {
     free: 0,
     pro: 20,
     ultra: 30,
+    api: 0,
   },
   windsurf: {
     free: 0,
@@ -48,6 +51,21 @@ function auditTool(entry: ToolEntry, teamSize: number, useCase: string): AuditRe
   const officialPrice = PRICING[tool]?.[planLower] ?? 0
   const totalOfficialCost = officialPrice * seats
 
+  // Check if paying for a free plan
+  if (planLower === 'free' || planLower === 'hobby') {
+    if (monthlySpend > 0) {
+      return {
+        tool,
+        currentSpend: monthlySpend,
+        recommendedAction: 'Review billing',
+        recommendedPlan: plan,
+        estimatedSavings: monthlySpend,
+        reason: `The ${plan} plan for ${tool} is free. You are paying $${monthlySpend}/mo — check for billing errors or unused paid seats.`,
+      }
+    }
+  }
+
+  // Check if overpaying vs official price
   if (monthlySpend > totalOfficialCost * 1.1 && totalOfficialCost > 0) {
     const savings = monthlySpend - totalOfficialCost
     return {
@@ -56,10 +74,11 @@ function auditTool(entry: ToolEntry, teamSize: number, useCase: string): AuditRe
       recommendedAction: 'Review billing',
       recommendedPlan: plan,
       estimatedSavings: savings,
-      reason: `You're paying $${monthlySpend}/mo but the official ${plan} plan for ${seats} seat(s) costs $${totalOfficialCost}/mo. Check for unused seats or billing errors.`,
+      reason: `You are paying $${monthlySpend}/mo but the official ${plan} plan for ${seats} seat(s) costs $${totalOfficialCost}/mo. Check for unused seats or billing errors.`,
     }
   }
 
+  // Cursor: Business overkill for 1-2 users
   if (tool === 'cursor' && planLower === 'business' && seats <= 2) {
     const savings = (PRICING.cursor.business - PRICING.cursor.pro) * seats
     return {
@@ -72,6 +91,7 @@ function auditTool(entry: ToolEntry, teamSize: number, useCase: string): AuditRe
     }
   }
 
+  // GitHub Copilot: Business overkill for small teams
   if (tool === 'github_copilot' && planLower === 'business' && seats <= 3) {
     const savings = (PRICING.github_copilot.business - PRICING.github_copilot.individual) * seats
     return {
@@ -84,6 +104,7 @@ function auditTool(entry: ToolEntry, teamSize: number, useCase: string): AuditRe
     }
   }
 
+  // Claude Team overkill for 1-2 users
   if (tool === 'claude' && planLower === 'team' && seats <= 2) {
     const savings = (PRICING.claude.team - PRICING.claude.pro) * seats
     return {
@@ -96,6 +117,7 @@ function auditTool(entry: ToolEntry, teamSize: number, useCase: string): AuditRe
     }
   }
 
+  // ChatGPT Team overkill for 1-2 users
   if (tool === 'chatgpt' && planLower === 'team' && seats <= 2) {
     const savings = (PRICING.chatgpt.team - PRICING.chatgpt.plus) * seats
     return {
@@ -108,12 +130,13 @@ function auditTool(entry: ToolEntry, teamSize: number, useCase: string): AuditRe
     }
   }
 
+  // Overlap: Copilot + Cursor for coding
   if (tool === 'github_copilot' && useCase === 'coding') {
     return {
       tool,
       currentSpend: monthlySpend,
       recommendedAction: 'Consider dropping in favour of Cursor',
-      recommendedPlan: planLower,
+      recommendedPlan: plan,
       estimatedSavings: monthlySpend * 0.5,
       reason: `Teams using Cursor often find Copilot redundant. Cursor's inline editing is more capable for most coding workflows. Try running just Cursor for one month.`,
     }
