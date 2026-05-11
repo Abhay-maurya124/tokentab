@@ -53,9 +53,9 @@ export default function LeadCapture({ auditResult, formState, onComplete, onSkip
       }
 
       onComplete(data.shareToken)
-    } catch (err) {
-      setError('Something went wrong. Please try again.')
-    } finally {
+    } catch {
+  setError('Something went wrong. Please try again.')
+} finally {
       setLoading(false)
     }
   }
@@ -69,7 +69,7 @@ export default function LeadCapture({ auditResult, formState, onComplete, onSkip
         <p className="text-gray-500 text-sm mb-6">
           Enter your email to receive the audit and a shareable link.
           {auditResult.totalMonthlySavings > 500 && (
-            <span className="text-yellow-700 font-medium"> We'll also reach out about Credex savings credits.</span>
+            <span className="text-yellow-700 font-medium"> We&apos;ll also reach out about Credex savings credits.</span>
           )}
         </p>
 

@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { Metadata } from 'next'
-
+import Link from 'next/link'
+import { AuditRecommendation } from '@/types'
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -61,12 +62,12 @@ export default async function ResultPage({ params }: Props) {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Report not found</h1>
           <p className="text-gray-500 mb-6">This audit link may have expired or is invalid.</p>
-          <a
+          <Link
             href="/"
             className="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors"
           >
             Run your own audit →
-          </a>
+          </Link>
         </div>
       </div>
     )
@@ -74,7 +75,7 @@ export default async function ResultPage({ params }: Props) {
 
   const savings = data.total_monthly_savings ?? 0
   const recommendations = (data.audit_data?.recommendations ?? []).filter(
-    (rec: any) => rec.currentSpend > 0
+    (rec: AuditRecommendation) => rec.currentSpend > 0
   )
 
   return (
@@ -107,7 +108,7 @@ export default async function ResultPage({ params }: Props) {
             <div className="px-6 py-4 border-b border-gray-100">
               <h2 className="font-semibold text-gray-800">Breakdown by tool</h2>
             </div>
-            {recommendations.map((rec: any) => (
+            {(recommendations as AuditRecommendation[]).map((rec) => (
               <div key={rec.tool} className="px-6 py-4 border-b border-gray-100 last:border-0">
                 <div className="flex justify-between items-start mb-1">
                   <p className="font-medium text-gray-800">
@@ -132,12 +133,12 @@ export default async function ResultPage({ params }: Props) {
         <div className="bg-white border border-gray-200 rounded-xl p-6 text-center shadow-sm">
           <p className="font-semibold text-gray-800 mb-1">Want to audit your own AI spend?</p>
           <p className="text-gray-500 text-sm mb-4">Free, no login required. Takes 2 minutes.</p>
-          <a
+          <Link
             href="/"
             className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors"
           >
             Run my free audit →
-          </a>
+          </Link>
         </div>
 
       </div>

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -69,14 +70,19 @@ export default function SpendForm({ onSubmit }: SpendFormProps) {
     const [selectedTools, setSelectedTools] = useState<ToolName[]>([])
     const [rawInputs, setRawInputs] = useState<Record<string, string>>({})
     const [rawTeamSize, setRawTeamSize] = useState<string>(String(DEFAULT_FORM.teamSize))
-    useEffect(() => {
-        const saved = localStorage.getItem('tokentab_form')
-        if (saved) {
-            const parsed = JSON.parse(saved)
-            setForm(parsed)
-            setSelectedTools(parsed.tools.map((t: ToolEntry) => t.tool))
-        }
-    }, [])
+   useEffect(() => {
+    const saved = localStorage.getItem('tokentab_form')
+    if (saved) {
+        const parsed = JSON.parse(saved) as FormState
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+
+        setForm(parsed)
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+
+        setSelectedTools(parsed.tools.map((t: ToolEntry) => t.tool))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [])
 
     useEffect(() => {
         localStorage.setItem('tokentab_form', JSON.stringify(form))
@@ -144,7 +150,7 @@ export default function SpendForm({ onSubmit }: SpendFormProps) {
                 Audit Your AI Spend
             </h1>
             <p className="text-center text-gray-500 mb-8">
-                Select the tools you pay for and we'll find where you're overspending.
+                Select the tools you pay for and we&apos;ll find where you&apos;re overspending.
             </p>
 
             <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 shadow-sm">
