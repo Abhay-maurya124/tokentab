@@ -46,7 +46,6 @@ const TOOLS: { id: ToolName; label: string; plans: string[] }[] = [
         plans: ['Free', 'Pro', 'Teams'],
     },
 ]
-
 const USE_CASES: { id: UseCase; label: string }[] = [
     { id: 'coding', label: 'Coding' },
     { id: 'writing', label: 'Writing' },
