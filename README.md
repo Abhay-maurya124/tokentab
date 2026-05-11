@@ -23,7 +23,7 @@ ANTHROPIC_API_KEY=your_anthropic_key
 
 ## Deploy
 
-Live at: 
+Live at: https://tokentab-three.vercel.app 
 
 ## Tech Stack
 
