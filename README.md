@@ -4,6 +4,11 @@ TokenTab helps startup founders and engineering managers find out if they're ove
 
 Built for Credex as a free lead-generation audit tool.
 
+## Screenshots
+
+![Form Page](./screenshots/form.png)
+![Results Page](./screenshots/result.png)
+
 ## Quick Start
 
 ```bash
